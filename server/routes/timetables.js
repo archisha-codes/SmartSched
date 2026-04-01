@@ -1,14 +1,11 @@
 const express = require('express');
 const { body, query, validationResult } = require('express-validator');
 const { v4: uuidv4 } = require('uuid');
-const mongoose = require('mongoose');
-const Teacher = require('../models/Teacher');
-const Classroom = require('../models/Classroom');
-const Course = require('../models/Course');
-const Timetable = require('../models/Timetable');
-const TimetableSession = require('../models/TimetableSession');
-const Student = require('../models/Student');
-const Program = require('../models/Program');
+
+const { 
+  Teacher, Classroom, Course, Timetable, 
+  TimetableSession, Student, Program 
+} = require('../utils/mongooseToPrisma');
 const OptimizationEngine = require('../algorithms/OptimizationEngine');
 const { authenticateToken } = require('./auth');
 const logger = require('../utils/logger');

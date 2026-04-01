@@ -32,7 +32,8 @@ import {
   getCourses,
   createCourse,
   updateCourse,
-  deleteCourse
+  deleteCourse,
+  uploadCSV
 } from '../services/api';
 
 const ProgramsData = () => {
@@ -40,6 +41,7 @@ const ProgramsData = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('programs');
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(null);
   const [editingItem, setEditingItem] = useState(null);
   const [formType, setFormType] = useState('program'); // 'program', 'course', 'batch'
   
@@ -49,6 +51,95 @@ const ProgramsData = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const renderImportModal = () => {
+    if (!showImportModal) return null;
+    const isPrograms = showImportModal === 'programs';
+
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-gray-200 dark:border-gray-700">
+          <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center">
+              <Upload className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" />
+              Import {isPrograms ? 'Programs' : 'Courses'}
+            </h2>
+            <button 
+              onClick={() => setShowImportModal(null)}
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+          <div className="p-6">
+            <div className="mb-6">
+              <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">Step 1: Download Template</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                First, download the sample CSV file to ensure your data follows the correct format.
+              </p>
+              <button 
+                onClick={() => {
+                  if (isPrograms) {
+                    const headers = ['id', 'name', 'department', 'degree', 'duration', 'totalSemesters', 'currentSemester', 'totalStudents', 'divisions', 'studentsPerDivision', 'labBatches', 'studentsPerBatch'];
+                    const rows = [
+                      ['P001', 'Computer Science & Engineering', 'Computer Science', 'B.Tech', '4 years', '8', '1', '240', '4', '60', '3', '20'],
+                      ['P002', 'Information Technology', 'Computer Science', 'B.Tech', '4 years', '8', '1', '120', '2', '60', '3', '20']
+                    ];
+                    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\\n');
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.setAttribute('download', 'program_import_sample.csv');
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  } else {
+                    const headers = ['id', 'name', 'code', 'programId', 'semester', 'credits', 'type', 'hoursPerWeek', 'requiresLab', 'labHours', 'teacher'];
+                    const rows = [
+                      ['C001', 'Data Structures', 'CS301', 'P001', '3', '4', 'Theory', '3', 'true', '2', 'Dr. John Doe'],
+                      ['C002', 'Database Systems', 'CS302', 'P001', '3', '3', 'Theory', '3', 'false', '0', 'Jane Smith']
+                    ];
+                    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\\n');
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.setAttribute('download', 'course_import_sample.csv');
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }
+                }}
+                className="w-full flex justify-center items-center space-x-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition border border-blue-200 dark:border-blue-800"
+                type="button"
+              >
+                <Download className="w-4 h-4" />
+                <span>Download Sample CSV</span>
+              </button>
+            </div>
+            <div className="mb-2">
+              <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">Step 2: Upload Data</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                Upload your completed CSV file here.
+              </p>
+              <label className="w-full flex flex-col items-center justify-center px-4 py-8 bg-gray-50 dark:bg-gray-700/50 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition">
+                <Upload className="w-8 h-8 text-gray-400 mb-2" />
+                <span className="text-sm text-gray-600 dark:text-gray-300">Click to browse file</span>
+                <input
+                  type="file"
+                  accept=".csv"
+                  onChange={(e) => {
+                    handleCSVImport(e, showImportModal);
+                    setShowImportModal(null);
+                  }}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   // Form states for programs and courses
   const [programForm, setProgramForm] = useState({
@@ -207,6 +298,26 @@ const ProgramsData = () => {
       console.error('Error deleting course:', err);
       setError('Failed to delete course');
     }
+  };
+
+  const handleCSVImport = async (event, type) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+      const response = await uploadCSV(file, type);
+      if (response.success || response.imported !== undefined) {
+        alert(`Successfully imported ${response.imported || 0} items. ${response.errors || 0} errors.`);
+        if (type === 'programs') loadPrograms();
+        else loadCourses();
+      } else {
+        alert('Failed to import CSV: ' + (response.message || 'Unknown error.'));
+      }
+    } catch (error) {
+      console.error('CSV import error:', error);
+      alert('Error importing CSV file: ' + error.message);
+    }
+    event.target.value = '';
   };
 
   const handleSaveProgram = async () => {
@@ -573,51 +684,6 @@ const ProgramsData = () => {
 
   const renderProgramsList = () => (
     <div className="space-y-6">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Programs</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{programs.length}</p>
-            </div>
-            <BookOpen className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-          </div>
-        </div>
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Students</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {programs.reduce((sum, program) => sum + parseInt(program.totalStudents || 0), 0)}
-              </p>
-            </div>
-            <Users className="w-8 h-8 text-green-600 dark:text-green-400" />
-          </div>
-        </div>
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Departments</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {[...new Set(programs.map(p => p.department))].length}
-              </p>
-            </div>
-            <School className="w-8 h-8 text-purple-600 dark:text-purple-400" />
-          </div>
-        </div>
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Divisions</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {programs.reduce((sum, program) => sum + parseInt(program.divisions || 0), 0)}
-              </p>
-            </div>
-            <Layers className="w-8 h-8 text-orange-600 dark:text-orange-400" />
-          </div>
-        </div>
-      </div>
 
       {/* Programs Table */}
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -625,7 +691,10 @@ const ProgramsData = () => {
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Academic Programs</h3>
             <div className="flex space-x-3">
-              <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600">
+              <button 
+                onClick={() => setShowImportModal('programs')}
+                className="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
+              >
                 <Upload className="w-4 h-4" />
                 <span>Import CSV</span>
               </button>
@@ -721,51 +790,6 @@ const ProgramsData = () => {
 
   const renderCoursesList = () => (
     <div className="space-y-6">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Courses</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">{courses.length}</p>
-            </div>
-            <BookOpen className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-          </div>
-        </div>
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Theory Courses</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {courses.filter(c => c.type === 'Theory').length}
-              </p>
-            </div>
-            <GraduationCap className="w-8 h-8 text-green-600 dark:text-green-400" />
-          </div>
-        </div>
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Lab Courses</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {courses.filter(c => c.requiresLab).length}
-              </p>
-            </div>
-            <School className="w-8 h-8 text-purple-600 dark:text-purple-400" />
-          </div>
-        </div>
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Credits</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                {courses.reduce((sum, course) => sum + parseInt(course.credits || 0), 0)}
-              </p>
-            </div>
-            <Clock className="w-8 h-8 text-orange-600 dark:text-orange-400" />
-          </div>
-        </div>
-      </div>
 
       {/* Courses Table */}
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -773,7 +797,10 @@ const ProgramsData = () => {
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Courses</h3>
             <div className="flex space-x-3">
-              <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600">
+              <button 
+                onClick={() => setShowImportModal('courses')}
+                className="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
+              >
                 <Upload className="w-4 h-4" />
                 <span>Import CSV</span>
               </button>
@@ -796,12 +823,11 @@ const ProgramsData = () => {
           <table className="w-full">
             <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Course</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Program</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type & Hours</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Teacher</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Semester</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Course Details</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Program & Semester</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Credits & Hours</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Lab</th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -817,32 +843,27 @@ const ProgramsData = () => {
                       </div>
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900 dark:text-white">{course.name}</div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">{course.code} • {course.credits} credits</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">{course.code}</div>
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900 dark:text-white">
-                      {programs.find(p => p.id === course.programId)?.name || 'N/A'}
+                      {programs.find(p => p.id === course.programId)?.degree || programs.find(p => p.id === course.programId)?.name || 'N/A'}
                     </div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">Semester {course.semester}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900 dark:text-white">{course.credits} Credits</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">{course.hoursPerWeek}h/week</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900 dark:text-white">{course.type}</div>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
-                      {course.hoursPerWeek}h/week
-                      {course.requiresLab && ` (${course.labHours}h lab)`}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900 dark:text-white">
+                      {course.requiresLab ? `${course.labHours}h lab` : 'No Lab'}
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900 dark:text-white">{course.teacher}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900 dark:text-white">Semester {course.semester}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                      {course.status}
-                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end space-x-2">
@@ -869,6 +890,145 @@ const ProgramsData = () => {
     </div>
   );
 
+  const renderDivisionsBatchesList = () => (
+    <div className="space-y-6">
+      {/* Divisions & Batches Table */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Divisions & Batches</h3>
+            <div className="flex space-x-3">
+              <button 
+                onClick={() => setShowImportModal('programs')}
+                className="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
+              >
+                <Upload className="w-4 h-4" />
+                <span>Import CSV</span>
+              </button>
+              <button className="flex items-center space-x-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                <Download className="w-4 h-4" />
+                <span>Export</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Program</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Division</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Students</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Lab Batches</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Students/Batch</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Semester</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              {programs.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="px-6 py-12 text-center">
+                    <div className="flex flex-col items-center">
+                      <Layers className="w-12 h-12 text-gray-300 dark:text-gray-600 mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Divisions Found</h3>
+                      <p className="text-gray-500 dark:text-gray-400 mb-4">Add programs first to configure divisions and batches.</p>
+                      <button 
+                        onClick={() => setActiveTab('programs')}
+                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                      >
+                        <Plus className="w-4 h-4 mr-2" />
+                        Go to Programs
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                programs.flatMap((program) => {
+                  const divCount = parseInt(program.divisions || 0);
+                  if (divCount === 0) {
+                    return [(
+                      <tr key={program.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 h-10 w-10">
+                              <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                                <GraduationCap className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                              </div>
+                            </div>
+                            <div className="ml-4">
+                              <div className="text-sm font-medium text-gray-900 dark:text-white">{program.name}</div>
+                              <div className="text-sm text-gray-500 dark:text-gray-400">{program.degree}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">No divisions configured</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{program.totalStudents || 0}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{program.labBatches || 0}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{program.studentsPerBatch || '-'}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Sem {program.currentSemester || '-'}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                            {program.status}
+                          </span>
+                        </td>
+                      </tr>
+                    )];
+                  }
+                  return Array.from({ length: divCount }, (_, i) => (
+                    <tr key={`${program.id}-div-${i}`} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {i === 0 ? (
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 h-10 w-10">
+                              <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                                <GraduationCap className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                              </div>
+                            </div>
+                            <div className="ml-4">
+                              <div className="text-sm font-medium text-gray-900 dark:text-white">{program.name}</div>
+                              <div className="text-sm text-gray-500 dark:text-gray-400">{program.degree}</div>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-sm text-gray-400 dark:text-gray-500 pl-14">↳</div>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300">
+                          Division {String.fromCharCode(65 + i)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{program.studentsPerDivision || '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{program.labBatches || 0}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{program.studentsPerBatch || '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">Sem {program.currentSemester || '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                          {program.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ));
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderActiveTabContent = () => {
+    switch (activeTab) {
+      case 'programs': return renderProgramsList();
+      case 'courses': return renderCoursesList();
+      case 'divisions': return renderDivisionsBatchesList();
+      default: return renderProgramsList();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       {/* Header */}
@@ -876,8 +1036,8 @@ const ProgramsData = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <Calendar className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">Programs & Courses Management</h1>
+              <BookOpen className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">Programs, Courses & Batches</h1>
             </div>
             <div className="flex items-center space-x-4">
               <ThemeToggle />
@@ -893,34 +1053,6 @@ const ProgramsData = () => {
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-8">
-            <button
-              onClick={() => setActiveTab('programs')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'programs'
-                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-              }`}
-            >
-              Academic Programs
-            </button>
-            <button
-              onClick={() => setActiveTab('courses')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'courses'
-                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
-                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-              }`}
-            >
-              Courses
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Main Content with Sidebar */}
       <div className="w-full flex pt-0">
         {/* Left Sidebar */}
@@ -929,68 +1061,121 @@ const ProgramsData = () => {
         {/* Main Content Area */}
         <main className="flex-1">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" style={{ maxHeight: 'calc(100vh - 4rem)', overflow: 'auto' }}>
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                {activeTab === 'programs' ? 'Academic Programs' : 'Courses & Subjects'}
-              </h2>
+            {/* Page Title */}
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Academic Programs & Courses</h2>
               <p className="text-gray-600 dark:text-gray-400">
-                {activeTab === 'programs' 
-                  ? 'Set up academic programs, student divisions, and batch configurations'
-                  : 'Manage course details, credits, and subject assignments'
-                }
+                Configure academic programs, courses, and student divisions for comprehensive timetable planning
               </p>
             </div>
-            <button 
-              onClick={handleBack}
-              className="flex items-center px-6 py-3 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 font-medium"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Classrooms Data
-            </button>
-          </div>
-        </div>
 
-        <div className="mb-6 p-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-          <div className="flex items-start space-x-3">
-            <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
-            <div>
-              <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-1">Academic Structure Setup</h4>
-              <p className="text-blue-700 dark:text-blue-300 text-sm">
-                {activeTab === 'programs' 
-                  ? 'Configure programs with student divisions and lab batches. This determines the basic structure for timetable generation.'
-                  : 'Set up courses with credit hours, teaching requirements, and lab sessions. Link courses to programs and assign teachers.'
-                }
-              </p>
+            {/* Unified Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Total Programs</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{programs.length}</p>
+                  </div>
+                  <BookOpen className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                </div>
+              </div>
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Total Courses</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">{courses.length}</p>
+                  </div>
+                  <GraduationCap className="w-8 h-8 text-green-600 dark:text-green-400" />
+                </div>
+              </div>
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Schools</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                      {[...new Set(programs.map(p => p.department))].length}
+                    </p>
+                  </div>
+                  <School className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+                </div>
+              </div>
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Lab Courses</p>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                      {courses.filter(c => c.requiresLab).length}
+                    </p>
+                  </div>
+                  <Layers className="w-8 h-8 text-orange-600 dark:text-orange-400" />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
 
-        {activeTab === 'programs' ? renderProgramsList() : renderCoursesList()}
+            {/* Tabs inside content area */}
+            <div className="mb-6 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex space-x-8">
+                <button
+                  onClick={() => setActiveTab('programs')}
+                  className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+                    activeTab === 'programs'
+                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                  }`}
+                >
+                  Academic Programs
+                </button>
+                <button
+                  onClick={() => setActiveTab('courses')}
+                  className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+                    activeTab === 'courses'
+                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                  }`}
+                >
+                  Courses
+                </button>
+                <button
+                  onClick={() => setActiveTab('divisions')}
+                  className={`pb-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+                    activeTab === 'divisions'
+                      ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                  }`}
+                >
+                  Divisions & Batches
+                </button>
+              </div>
+            </div>
 
-        <div className="mt-8 flex justify-between">
-          <button 
-            onClick={handleBack}
-            className="flex items-center px-6 py-3 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 font-medium"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </button>
-          <button 
-            onClick={() => navigate('/infrastructure-data')}
-            className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
-          >
-            Next: Infrastructure & Policy
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </button>
-        </div>
+            {/* Tab Content */}
+            {renderActiveTabContent()}
+
+            <div className="mt-8 flex justify-between">
+              <button 
+                onClick={handleBack}
+                className="flex items-center px-6 py-3 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 font-medium"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </button>
+              <button 
+                onClick={() => navigate('/infrastructure-data')}
+                className="flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+              >
+                Next: Infrastructure & Policy
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </button>
+            </div>
           </div>
         </main>
       </div>
 
       {/* Add/Edit Form Modal */}
       {showAddForm && (formType === 'program' ? renderProgramForm() : renderCourseForm())}
+      {/* Import Modal */}
+      {showImportModal && renderImportModal()}
     </div>
   );
 };

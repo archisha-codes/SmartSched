@@ -1,7 +1,6 @@
 const OptimizationEngine = require('../algorithms/OptimizationEngine');
 const logger = require('./logger');
-const Timetable = require('../models/Timetable');
-const TimetableSession = require('../models/TimetableSession');
+const { Timetable, TimetableSession } = require('./mongooseToPrisma');
 
 /**
  * Timetable Generator Utility

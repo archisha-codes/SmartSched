@@ -142,17 +142,6 @@ The README already includes these badges:
 - ✅ Live Demo Badge
 - ✅ License Badge
 
-Consider adding more:
-
-```markdown
-![GitHub Stars](https://img.shields.io/github/stars/Harjotraith04/Time_Table_Generation_AI_Tool?style=for-the-badge)
-![GitHub Forks](https://img.shields.io/github/forks/Harjotraith04/Time_Table_Generation_AI_Tool?style=for-the-badge)
-![GitHub Issues](https://img.shields.io/github/issues/Harjotraith04/Time_Table_Generation_AI_Tool?style=for-the-badge)
-![GitHub License](https://img.shields.io/github/license/Harjotraith04/Time_Table_Generation_AI_Tool?style=for-the-badge)
-![Last Commit](https://img.shields.io/github/last-commit/Harjotraith04/Time_Table_Generation_AI_Tool?style=for-the-badge)
-```
-
----
 
 ## 📊 GitHub Pages (Optional)
 
@@ -213,7 +202,7 @@ Before making the repository public (if it's not already):
 Run these commands to add missing files:
 
 ```bash
-cd "c:\Users\HARJOT SINGH\Desktop\Capstone\Time_Table_Generation_AI_Tool"
+cd "C:\Users\archi\Downloads\Time_Table_Generation_AI_Tool-main"
 
 # Add LICENSE
 # (Create the LICENSE file as shown above)

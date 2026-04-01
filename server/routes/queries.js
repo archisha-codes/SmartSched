@@ -1,8 +1,6 @@
 const express = require('express');
+const { Teacher, Classroom, Course, Student, User, Program, Division, SystemConfig, Holiday, Timetable, TimetableSession, Query } = require('../utils/mongooseToPrisma');
 const { body, query, validationResult } = require('express-validator');
-const Query = require('../models/Query');
-const User = require('../models/User');
-const Timetable = require('../models/Timetable');
 const { authenticateToken } = require('./auth');
 const { sendQueryNotification, sendQueryResponseEmail } = require('../utils/emailService');
 

@@ -40,6 +40,7 @@ const TeachersData = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('list');
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [editingTeacher, setEditingTeacher] = useState(null);
   
   // Get sessionId from localStorage
@@ -75,8 +76,78 @@ const TeachersData = () => {
       saturday: { available: false, startTime: '09:00', endTime: '13:00' },
       sunday: { available: false, startTime: '09:00', endTime: '13:00' }
     },
-    priority: 'medium'
+    priority: 'medium',
+    status: 'Active'
   });
+
+  const renderImportModal = () => (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-gray-200 dark:border-gray-700">
+        <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center">
+            <Upload className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" />
+            Import Teachers
+          </h2>
+          <button 
+            onClick={() => setShowImportModal(false)}
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+        <div className="p-6">
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">Step 1: Download Template</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+              First, download the sample CSV file to ensure your data follows the correct format.
+            </p>
+            <button 
+              onClick={() => {
+                const headers = ['id', 'name', 'email', 'phone', 'department', 'designation', 'qualification', 'experience', 'maxHoursPerWeek'];
+                const rows = [
+                  ['T001', 'Dr. John Doe', 'john.doe@example.com', '1234567890', 'Computer Science', 'Professor', 'Ph.D', '10', '20'],
+                  ['T002', 'Jane Smith', 'jane.smith@example.com', '0987654321', 'Engineering', 'Assistant Professor', 'M.Tech', '5', '18']
+                ];
+                const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\\n');
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.setAttribute('download', 'teacher_import_sample.csv');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              }}
+              className="w-full flex justify-center items-center space-x-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition border border-blue-200 dark:border-blue-800"
+              type="button"
+            >
+              <Download className="w-4 h-4" />
+              <span>Download Sample CSV</span>
+            </button>
+          </div>
+          <div className="mb-2">
+            <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">Step 2: Upload Data</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+              Upload your completed CSV file here.
+            </p>
+            <label className="w-full flex flex-col items-center justify-center px-4 py-8 bg-gray-50 dark:bg-gray-700/50 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition">
+              <Upload className="w-8 h-8 text-gray-400 mb-2" />
+              <span className="text-sm text-gray-600 dark:text-gray-300">Click to browse file</span>
+              <input
+                type="file"
+                accept=".csv"
+                onChange={(e) => {
+                  handleCSVImport(e);
+                  setShowImportModal(false);
+                }}
+                className="hidden"
+              />
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
 
   const [teachers, setTeachers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -492,6 +563,7 @@ const TeachersData = () => {
     }
 
     return (
+      <>
       <div className="space-y-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -545,16 +617,13 @@ const TeachersData = () => {
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Teachers List</h3>
             <div className="flex space-x-3">
-              <label className="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer">
+              <button 
+                onClick={() => setShowImportModal(true)}
+                className="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600"
+              >
                 <Upload className="w-4 h-4" />
                 <span>Import CSV</span>
-                <input
-                  type="file"
-                  accept=".csv"
-                  onChange={handleCSVImport}
-                  className="hidden"
-                />
-              </label>
+              </button>
               <button 
                 onClick={handleExport}
                 className="group relative flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 transition-all duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-xl hover:shadow-green-500/25 overflow-hidden"
@@ -688,6 +757,7 @@ const TeachersData = () => {
         </div>
       </div>
     </div>
+    </>
   );
   }; // Close renderTeachersList function
 
@@ -778,6 +848,8 @@ const TeachersData = () => {
 
       {/* Add/Edit Form Modal */}
       {showAddForm && renderTeacherForm()}
+      {/* Import Modal */}
+      {showImportModal && renderImportModal()}
     </div>
   );
 };

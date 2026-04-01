@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const TimetableSession = require("../models/TimetableSession");
+const { TimetableSession } = require("../utils/mongooseToPrisma");
 const { authenticateToken } = require("./auth");
 
 // Apply authentication to all routes

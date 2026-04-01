@@ -1,0 +1,253 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "library"
+}
+
+model User {
+  id                 String      @id @default(uuid())
+  name               String
+  email              String      @unique
+  password           String
+  role               String      @default("admin")
+  department         String?
+  isActive           Boolean     @default(true)
+  isFirstLogin       Boolean     @default(true)
+  mustChangePassword Boolean     @default(false)
+  lastLogin          DateTime?
+  passwordChangedAt  DateTime?
+  preferences        Json?       @default("{\"theme\":\"light\",\"notifications\":{\"email\":true,\"push\":true}}")
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  createdTimetables  Timetable[] @relation("TimetableCreator")
+  modifiedTimetables Timetable[] @relation("TimetableModifier")
+  queries            Query[]     @relation("QuerySubmitter")
+  respondedQueries   Query[]     @relation("QueryResponder")
+}
+
+model Classroom {
+  id                 String   @id
+  name               String
+  building           String
+  floor              String
+  capacity           Int
+  type               String
+  features           String[]
+  availability       Json
+  priority           String   @default("medium")
+  status             String   @default("available")
+  suitableFor        String[]
+  constraints        Json?
+  utilizationMetrics Json?
+  sessionId          String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model Course {
+  id                String   @id
+  name              String
+  code              String   @unique
+  department        String
+  program           String
+  year              Int
+  semester          Int
+  credits           Int
+  sessions          Json
+  totalHoursPerWeek Int
+  enrolledStudents  Int
+  divisions         Json?    
+  assignedTeachers  Json?    
+  constraints       Json?
+  prerequisites     String[]
+  corequisites      String[]
+  isActive          Boolean  @default(true)
+  isCore            Boolean  @default(true)
+  priority          String   @default("medium")
+  sessionId         String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Teacher {
+  id              String   @id
+  name            String
+  email           String   @unique
+  phone           String?
+  department      String
+  designation     String
+  qualification   String?
+  experience      String?
+  subjects        String[]
+  maxHoursPerWeek Int      @default(20)
+  availability    Json
+  teacherType     String   @default("core")
+  priority        String   @default("medium")
+  status          String   @default("active")
+  preferences     Json?
+  constraints     Json?
+  sessionId       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Student {
+  id              String   @id @default(uuid())
+  studentId       String   @unique
+  personalInfo    Json
+  academicInfo    Json
+  enrolledCourses Json?
+  attendance      Json?
+  status          String   @default("Active")
+  guardianInfo    Json?
+  notes           Json?
+  sessionId       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model TimetableSession {
+  id                String      @id @default(uuid())
+  academicYear      String
+  department        String
+  year              String
+  semester          String
+  selectedAlgorithm String      @default("hybrid")
+  status            String      @default("draft")
+  config            Json?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  timetables        Timetable[]
+}
+
+model Timetable {
+  id                 String            @id @default(uuid())
+  name               String
+  sessionId          String?
+  session            TimetableSession? @relation(fields: [sessionId], references: [id])
+  academicYear       String
+  semester           Int
+  department         String
+  year               Int?
+  program            String?
+  status             String            @default("draft")
+  schedule           Json?
+  conflicts          Json?
+  generationSettings Json?
+  metrics            Json?
+  quality            Json?
+  statistics         Json?
+  createdById        String
+  createdBy          User              @relation("TimetableCreator", fields: [createdById], references: [id])
+  lastModifiedById   String?
+  lastModifiedBy     User?             @relation("TimetableModifier", fields: [lastModifiedById], references: [id])
+  publishedAt        DateTime?
+  validFrom          DateTime?
+  validTo            DateTime?
+  version            Int               @default(1)
+  isActive           Boolean           @default(true)
+  comments           Json?
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+}
+
+model Query {
+  id               String    @id @default(uuid())
+  subject          String
+  description      String
+  type             String    @default("general")
+  status           String    @default("pending")
+  
+  submittedById    String
+  submitter        User      @relation("QuerySubmitter", fields: [submittedById], references: [id])
+  submittedByName  String?
+  submittedByEmail String?
+  submittedByRole  String?
+
+  timetableId      String?
+  adminResponse    String?
+
+  respondedById    String?
+  responder        User?     @relation("QueryResponder", fields: [respondedById], references: [id])
+  respondedByName  String?
+  respondedByEmail String?
+  
+  respondedAt      DateTime?
+  priority         String    @default("medium")
+  attachments      Json?
+  comments         Json?
+  resolutionNotes  String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
+
+model Holiday {
+  id          String    @id @default(uuid())
+  holidayId   String    @unique
+  name        String
+  date        DateTime?
+  startDate   DateTime?
+  endDate     DateTime?
+  type        String    @default("National Holiday")
+  recurring   Boolean   @default(false)
+  description String?
+  isDateRange Boolean   @default(false)
+  status      String    @default("Active")
+  createdBy   String
+  updatedBy   String?
+  sessionId   String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Program {
+  dbId           String   @id @default(uuid())
+  id             String   @unique
+  name           String
+  code           String   @unique
+  school         String
+  type           String
+  duration       Int
+  totalSemesters Int
+  status         String   @default("Active")
+  description    String?
+  requirements   Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  sessionId      String?
+}
+
+model Division {
+  dbId         String   @id @default(uuid())
+  id           String   @unique
+  name         String
+  program      String
+  year         Int
+  semester     Int
+  studentCount Int
+  labBatches   Int      @default(0)
+  batches      Json?
+  status       String   @default("Active")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model SystemConfig {
+  id               String   @id @default(uuid())
+  generalPolicies  Json?
+  workingHours     Json?
+  academicCalendar Json?
+  constraintRules  Json?
+  createdBy        String
+  updatedBy        String?
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}

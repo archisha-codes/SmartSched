@@ -1,9 +1,4 @@
-const Teacher = require('../models/Teacher');
-const Timetable = require('../models/Timetable');
-const Classroom = require('../models/Classroom');
-const Course = require('../models/Course');
-const Student = require('../models/Student');
-const Program = require('../models/Program');
+const { Teacher, Timetable, Classroom, Course, Student, Program } = require('./mongooseToPrisma');
 
 class ChatbotService {
   constructor() {

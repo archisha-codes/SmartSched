@@ -1,0 +1,289 @@
+﻿node : C:\Users\Roshi\OneDrive\
+Desktop\Time_Table_Generation_A
+I_Tool-main\Time_Table_Generati
+on_AI_Tool-main\server\node_mod
+ules\@prisma\client\runtime\cli
+ent.js:66
+At line:1 char:1
++ node server.js 2>&1 | 
+Out-File out2.txt -Encoding 
+utf8
++ ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          :  
+   NotSpecified: (C:\Users\Ro  
+  shi\...me\client.js:66:Str   
+ ing) [], RemoteException
+    + FullyQualifiedErrorId :  
+   NativeCommandError
+ 
+Read more at https://pris.ly/d/
+client-constructor`),this.name=
+"PrismaClientConstructorValidat
+ionError"}get[Symbol.toStringTa
+g](){return"PrismaClientConstru
+ctorValidationError"}};gt(R,"Pr
+ismaClientConstructorValidation
+Error");var _l=["errorFormat","
+adapter","accelerateUrl","log",
+"transactionOptions","omit","co
+mments","__internal"],$l=["pret
+ty","colorless","minimal"],Ll=[
+"info","query","warn","error"],
+Cm={adapter:()=>{},accelerateUr
+l:e=>{if(e!==void 0){if(typeof 
+e!="string")throw new 
+R(`Invalid value 
+${JSON.stringify(e)} for 
+"accelerateUrl" provided to 
+PrismaClient constructor.`);if(
+e.trim().length===0)throw new 
+R('"accelerateUrl" provided to 
+PrismaClient constructor must 
+be a non-empty string.')}},erro
+rFormat:e=>{if(e){if(typeof 
+e!="string")throw new 
+R(`Invalid value 
+${JSON.stringify(e)} for 
+"errorFormat" provided to 
+PrismaClient constructor.`);if(
+!$l.includes(e)){let 
+t=Ut(e,$l);throw new 
+R(`Invalid errorFormat ${e} 
+provided to PrismaClient constr
+uctor.${t}`)}}},log:e=>{if(!e)r
+eturn;if(!Array.isArray(e))thro
+w new R(`Invalid value 
+${JSON.stringify(e)} for "log" 
+provided to PrismaClient 
+constructor.`);function 
+t(r){if(typeof r=="string"&&!Ll
+.includes(r)){let 
+n=Ut(r,Ll);throw new 
+R(`Invalid log level "${r}" 
+provided to PrismaClient 
+constructor.${n}`)}}for(let r 
+of e){t(r);let 
+n={level:t,emit:i=>{let o=["std
+out","event"];if(!o.includes(i)
+){let s=Ut(i,o);throw new 
+R(`Invalid value 
+${JSON.stringify(i)} for 
+"emit" in logLevel provided to 
+PrismaClient constructor.${s}`)
+}}};if(r&&typeof 
+r=="object")for(let[i,o]of Obje
+ct.entries(r))if(n[i])n[i](o);e
+lse throw new R(`Invalid 
+property ${i} for "log" 
+provided to PrismaClient constr
+uctor`)}},transactionOptions:e=
+>{if(!e)return;let t=e.maxWait;
+if(t!=null&&t<=0)throw new 
+R(`Invalid value ${t} for 
+maxWait in 
+"transactionOptions" provided 
+to PrismaClient constructor. 
+maxWait needs to be greater 
+than 0`);let r=e.timeout;if(r!=
+null&&r<=0)throw new 
+R(`Invalid value ${r} for 
+timeout in 
+"transactionOptions" provided 
+to PrismaClient constructor. 
+timeout needs to be greater 
+than 
+0`)},omit:(e,t)=>{if(typeof 
+e!="object")throw new 
+R('"omit" option is expected 
+to be an 
+object.');if(e===null)throw 
+new R('"omit" option can not 
+be `null`');let 
+r=[];for(let[n,i]of 
+Object.entries(e)){let o=Im(n,t
+.runtimeDataModel);if(!o){r.pus
+h({kind:"UnknownModel",modelKey
+:n});continue}for(let[s,a]of 
+Object.entries(i)){let l=o.fiel
+ds.find(u=>u.name===s);if(!l){r
+.push({kind:"UnknownField",mode
+lKey:n,fieldName:s});continue}i
+f(l.relationName){r.push({kind:
+"RelationInOmit",modelKey:n,fie
+ldName:s});continue}typeof a!="
+boolean"&&r.push({kind:"Invalid
+FieldValue",modelKey:n,fieldNam
+e:s})}}if(r.length>0)throw new 
+R(Om(e,r))},comments:e=>{if(e!=
+=void 
+0){if(!Array.isArray(e))throw 
+new R(`Invalid value 
+${JSON.stringify(e)} for 
+"comments" provided to 
+PrismaClient constructor. 
+Expected an array of SQL 
+commenter plugins.`);for(let 
+t=0;t<e.length;t++)if(typeof 
+e[t]!="function")throw new 
+R(`Invalid value at index ${t} 
+for "comments" provided to 
+PrismaClient constructor. Each 
+plugin must be a function.`)}},
+__internal:e=>{if(!e)return;let
+ t=["debug","engine","configOve
+rride"];if(typeof 
+e!="object")throw new 
+R(`Invalid value 
+${JSON.stringify(e)} for 
+"__internal" to PrismaClient 
+constructor`);for(let[r]of Obje
+ct.entries(e))if(!t.includes(r)
+){let n=Ut(r,t);throw new 
+R(`Invalid property 
+${JSON.stringify(r)} for 
+"__internal" provided to 
+PrismaClient 
+constructor.${n}`)}}};function 
+Rm(e){let t=e.adapter!==void 
+0,r=e.accelerateUrl!==void 
+0;if(t&&r)throw new R('The 
+"adapter" and "accelerateUrl" 
+options are mutually 
+exclusive. Please provide only 
+one of them.');if(!t&&!r)throw 
+new R('Using engine type 
+"client" requires either 
+"adapter" or "accelerateUrl" 
+to be provided to PrismaClient 
+constructor.')}function 
+jl(e,t){for(let[r,n]of Object.e
+ntries(e)){if(!_l.includes(r)){
+let i=Ut(r,_l);throw new 
+R(`Unknown property ${r} 
+provided to PrismaClient constr
+uctor.${i}`)}Cm[r](n,t)}Rm(e)}f
+unction Ut(e,t){if(t.length===0
+||typeof 
+e!="string")return"";let 
+r=km(e,t);return r?` Did you 
+mean "${r}"?`:""}function 
+km(e,t){if(t.length===0)return 
+null;let r=t.map(i=>({value:i,d
+istance:(0,ql.default)(e,i)}));
+r.sort((i,o)=>i.distance<o.dist
+ance?-1:1);let n=r[0];return n.
+distance<3?n.value:null}functio
+n Im(e,t){return Vl(t.models,e)
+??Vl(t.types,e)}function 
+Vl(e,t){let r=Object.keys(e).fi
+nd(n=>pe(n)===t);if(r)return 
+e[r]}function Om(e,t){let 
+r=Be(e);for(let o of t)switch(o
+.kind){case"UnknownModel":r.arg
+uments.getField(o.modelKey)?.ma
+rkAsError(),r.addErrorMessage((
+)=>`Unknown model name: ${o.mod
+elKey}.`);break;case"UnknownFie
+ld":r.arguments.getDeepField([o
+.modelKey,o.fieldName])?.markAs
+Error(),r.addErrorMessage(()=>`
+Model "${o.modelKey}" does not 
+have a field named "${o.fieldNa
+me}".`);break;case"RelationInOm
+it":r.arguments.getDeepField([o
+.modelKey,o.fieldName])?.markAs
+Error(),r.addErrorMessage(()=>'
+Relations are already excluded 
+by default and can not be 
+specified in "omit".');break;ca
+se"InvalidFieldValue":r.argumen
+ts.getDeepFieldValue([o.modelKe
+y,o.fieldName])?.markAsError(),
+r.addErrorMessage(()=>"Omit 
+field option value must be a bo
+olean.");break}let{message:n,ar
+gs:i}=sr(r,"colorless");return`
+Error validating "omit" option:
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                               
+                            
+
+PrismaClientConstructorValidati
+onError: Using engine type 
+"client" requires either 
+"adapter" or "accelerateUrl" 
+to be provided to PrismaClient 
+constructor.
+Read more at https://pris.ly/d/
+client-constructor
+    at Rm (C:\Users\Roshi\OneDr
+ive\Desktop\Time_Table_Generati
+on_AI_Tool-main\Time_Table_Gene
+ration_AI_Tool-main\server\node
+_modules\@prisma\client\runtime
+\client.js:66:3615)
+    at jl (C:\Users\Roshi\OneDr
+ive\Desktop\Time_Table_Generati
+on_AI_Tool-main\Time_Table_Gene
+ration_AI_Tool-main\server\node
+_modules\@prisma\client\runtime
+\client.js:66:3916)
+    at new t (C:\Users\Roshi\On
+eDrive\Desktop\Time_Table_Gener
+ation_AI_Tool-main\Time_Table_G
+eneration_AI_Tool-main\server\n
+ode_modules\@prisma\client\runt
+ime\client.js:70:1808)
+    at Object.<anonymous> (C:\U
+sers\Roshi\OneDrive\Desktop\Tim
+e_Table_Generation_AI_Tool-main
+\Time_Table_Generation_AI_Tool-
+main\server\config\prisma.js:4:
+16)
+    at Module._compile (node:in
+ternal/modules/cjs/loader:1761:
+14)
+    at Object..js (node:interna
+l/modules/cjs/loader:1893:10)
+    at Module.load (node:intern
+al/modules/cjs/loader:1481:32)
+    at Module._load (node:inter
+nal/modules/cjs/loader:1300:12)
+    at 
+TracingChannel.traceSync (node:
+diagnostics_channel:328:14)
+    at wrapModuleLoad (node:int
+ernal/modules/cjs/loader:245:24
+)
+
+Node.js v24.11.1
