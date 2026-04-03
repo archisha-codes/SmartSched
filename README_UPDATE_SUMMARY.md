@@ -55,7 +55,7 @@ Complete guide for setting up GitHub repository professionally:
 ### On GitHub Website:
 
 1. **Go to Repository Settings**
-   - Visit: https://github.com/Harjotraith04/Time_Table_Generation_AI_Tool
+   - Visit: https://github.com/archisha-codes/SmartSched
 
 2. **Edit About Section** (Right sidebar)
    - Click the ⚙️ icon next to "About"
@@ -125,7 +125,7 @@ Complete guide for setting up GitHub repository professionally:
 ## 📝 Quick Reference
 
 ### Repository URLs:
-- **GitHub Repo**: https://github.com/Harjotraith04/Time_Table_Generation_AI_Tool
+- **GitHub Repo**: https://github.com/archisha-codes/SmartSched
 - **Live Frontend**: https://timetable-frontend-psi.vercel.app
 - **Live Backend**: https://timetable-backend-2h6m.onrender.com/api/health
 

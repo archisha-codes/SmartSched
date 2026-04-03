@@ -69,7 +69,7 @@ Before you begin, make sure you have:
 
 1. Open PowerShell in your project folder:
    ```powershell
-   cd "c:\Users\HARJOT SINGH\Desktop\Capstone\Time_Table_Generation_AI_Tool"
+   cd "c:\Users\HARJOT SINGH\Desktop\Capstone\SmartSched"
    ```
 
 2. Initialize git (if not already done):
@@ -81,13 +81,13 @@ Before you begin, make sure you have:
 
 3. Create a new repository on GitHub:
    - Go to [github.com/new](https://github.com/new)
-   - Name: `Time_Table_Generation_AI_Tool`
+   - Name: `SmartSched`
    - Visibility: Public or Private
    - Click **"Create repository"**
 
 4. Push your code:
    ```powershell
-   git remote add origin https://github.com/YOUR_USERNAME/Time_Table_Generation_AI_Tool.git
+   git remote add origin https://github.com/YOUR_USERNAME/SmartSched.git
    git branch -M main
    git push -u origin main
    ```
@@ -112,7 +112,7 @@ Copy the output - this is your JWT_SECRET.
 1. Go to [dashboard.render.com](https://dashboard.render.com)
 2. Click **"New +"** → **"Web Service"**
 3. Connect your GitHub account (if not already connected)
-4. Find and select your repository: `Time_Table_Generation_AI_Tool`
+4. Find and select your repository: `SmartSched`
 5. Click **"Connect"**
 
 ### Step 3.2: Configure Web Service
@@ -191,7 +191,7 @@ Open these URLs in your browser:
 1. Go to [vercel.com/new](https://vercel.com/new)
 2. Click **"Import Git Repository"**
 3. If not connected, click **"Continue with GitHub"**
-4. Find your repository: `Time_Table_Generation_AI_Tool`
+4. Find your repository: `SmartSched`
 5. Click **"Import"**
 
 ### Step 4.2: Configure Project

@@ -202,7 +202,7 @@ Before making the repository public (if it's not already):
 Run these commands to add missing files:
 
 ```bash
-cd "C:\Users\archi\Downloads\Time_Table_Generation_AI_Tool-main"
+cd "C:\Users\archi\Downloads\SmartSched-main"
 
 # Add LICENSE
 # (Create the LICENSE file as shown above)

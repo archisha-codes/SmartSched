@@ -1,0 +1,12 @@
+node_modules/
+.env
+.env.local
+.DS_Store
+*.log
+
+# Build files
+/client/dist
+/server/dist
+
+# Temp script
+rename_repo.js

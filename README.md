@@ -88,11 +88,6 @@ This project implements a sophisticated timetable generation system using geneti
 
 ---
 
-## 🚀 Live Demo
-
-**Frontend**: [https://timetable-frontend-psi.vercel.app](https://timetable-frontend-psi.vercel.app)  
-**Backend API**: [https://timetable-backend-2h6m.onrender.com/api/health](https://timetable-backend-2h6m.onrender.com/api/health)
-
 ### Demo Credentials
 - **Admin**: `admin@example.com` / `admin123`
 - **Faculty**: `faculty@example.com` / `faculty123`
@@ -120,8 +115,8 @@ This project implements a sophisticated timetable generation system using geneti
 |-----------|---------|
 | **Node.js** | JavaScript runtime for server-side logic |
 | **Express.js** | Web framework for RESTful API |
-| **MongoDB** | NoSQL database for flexible data storage |
-| **Mongoose** | ODM for MongoDB with schema validation |
+| **PostgreSQL** | Relational database for robust data storage |
+| **Prisma** | Modern ORM for strictly typed database access |
 | **Socket.io** | WebSocket for real-time progress updates |
 | **JWT** | JSON Web Tokens for secure authentication |
 | **Bcrypt** | Password hashing and security |
@@ -135,7 +130,7 @@ This project implements a sophisticated timetable generation system using geneti
 |------|---------|
 | **Vercel** | Frontend hosting with automatic deployments |
 | **Render** | Backend hosting with health checks |
-| **MongoDB Atlas** | Cloud-hosted MongoDB database |
+| **Supabase** | Cloud-hosted PostgreSQL platform |
 | **GitHub** | Version control and CI/CD trigger |
 | **Git** | Source code management |
 
@@ -180,14 +175,9 @@ Time_Table_Generation_AI_Tool/
 │   │   ├── algorithms.js               # Algorithm selection endpoints
 │   │   ├── queries.js                  # Query resolution system
 │   │   └── chatbot.js                  # AI chatbot endpoints
-│   ├── 📁 models/                      # Mongoose schemas
-│   │   ├── User.js                     # User model (admin, faculty, student)
-│   │   ├── Teacher.js                  # Teacher details & availability
-│   │   ├── Classroom.js                # Classroom/room information
-│   │   ├── Course.js                   # Course/subject details
-│   │   ├── Timetable.js                # Generated timetables
-│   │   ├── Query.js                    # User queries
-│   │   └── Student.js                  # Student information
+│   ├── 📁 prisma/                      # Prisma ORM setup
+│   │   ├── schema.prisma               # Database schema definition
+│   │   └── migrations/                 # Migration history
 │   ├── 📁 algorithms/                  # Optimization algorithms
 │   │   ├── genetic.js                  # Genetic Algorithm implementation
 │   │   ├── backtracking.js             # Backtracking algorithm
@@ -228,7 +218,7 @@ Time_Table_Generation_AI_Tool/
 Before you begin, ensure you have the following installed:
 
 - **Node.js** (v18 or higher) - [Download](https://nodejs.org/)
-- **MongoDB** (v6 or higher) - [Download](https://www.mongodb.com/try/download/community) OR use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+- **PostgreSQL** (v14 or higher) - [Download](https://www.postgresql.org/download/) OR use [Supabase](https://supabase.com)
 - **npm** or **yarn** - Comes with Node.js
 - **Git** - [Download](https://git-scm.com/)
 
@@ -237,8 +227,8 @@ Before you begin, ensure you have the following installed:
 #### 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/Harjotraith04/Time_Table_Generation_AI_Tool.git
-cd Time_Table_Generation_AI_Tool
+git clone https://github.com/archisha-codes/SmartSched.git
+cd SmartSched
 ```
 
 #### 2️⃣ Backend Setup
@@ -255,7 +245,7 @@ cp .env.example .env
 
 # Edit .env with your configuration
 # Required variables:
-# - MONGODB_URI (MongoDB connection string)
+# - DATABASE_URL (PostgreSQL connection string)
 # - JWT_SECRET (Random secret key)
 # - GEMINI_API_KEY (Google Gemini AI key)
 # - SMTP credentials (for email service)
@@ -265,9 +255,9 @@ cp .env.example .env
 
 ```env
 # Database
-MONGODB_URI=mongodb://localhost:27017/timetable_generator
-# OR for MongoDB Atlas:
-# MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/timetable_generator
+DATABASE_URL=postgresql://postgres:password@localhost:5432/timetable_generator?schema=public
+# OR for Supabase:
+# DATABASE_URL=postgres://[db-user]:[password]@[host]:5432/[db-name]
 
 # Server
 PORT=8000
@@ -373,7 +363,7 @@ Open your browser and navigate to:
 ### Quick Start Guides
 - [🚀 Quick Start Guide](QUICK_START_GUIDE.md) - Get started in 5 minutes
 - [📖 Environment Setup](ENVIRONMENT_SETUP.md) - Detailed environment configuration
-- [🗄️ MongoDB Setup](MONGODB_SETUP.md) - Database setup and seeding
+- [🗄️ Database Setup](DATABASE_SETUP.md) - PostgreSQL and Prisma setup
 
 ### Feature Guides
 - [🤖 Gemini AI Integration](GEMINI_AI_INTEGRATION.md) - Set up AI chatbot
@@ -571,7 +561,7 @@ VITE_API_URL=http://localhost:8000/api
 # .env in server/
 
 # Database
-MONGODB_URI=mongodb://localhost:27017/timetable_generator
+DATABASE_URL=postgresql://postgres:password@localhost:5432/timetable_generator?schema=public
 
 # Server
 PORT=8000
@@ -659,14 +649,14 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ## 👥 Authors
 
-- **Harjot Singh** - [GitHub](https://github.com/Harjotraith04)
+- **Archisha** - [GitHub](https://github.com/archisha-codes)
 
 ---
 
 ## 🙏 Acknowledgments
 
 - Google Gemini AI for chatbot capabilities
-- MongoDB for flexible data storage
+- PostgreSQL & Prisma for robust, typed data storage
 - Vercel & Render for seamless deployment
 - React & Vite teams for excellent developer experience
 - Open source community for amazing libraries
@@ -678,9 +668,9 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 For support, questions, or feedback:
 
 - 📧 Email: support@smartsched.com
-- 🐛 Issues: [GitHub Issues](https://github.com/Harjotraith04/Time_Table_Generation_AI_Tool/issues)
+- 🐛 Issues: [GitHub Issues](https://github.com/archisha-codes/SmartSched/issues)
 - 📖 Docs: Check the documentation files in the repository
-- 💬 Discussions: [GitHub Discussions](https://github.com/Harjotraith04/Time_Table_Generation_AI_Tool/discussions)
+- 💬 Discussions: [GitHub Discussions](https://github.com/archisha-codes/SmartSched/discussions)
 
 ---
 
