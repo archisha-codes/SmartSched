@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import ThemeToggle from '../components/ThemeToggle';
+import AdminSidebar from '../components/AdminSidebar';
 import { 
   Calendar, 
   Building2, 
@@ -38,6 +39,7 @@ const ClassroomsData = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [editingRoom, setEditingRoom] = useState(null);
   
   // Get sessionId from localStorage
@@ -53,6 +55,74 @@ const ClassroomsData = () => {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
   
+  const renderImportModal = () => (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden border border-gray-200 dark:border-gray-700">
+        <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center">
+            <Upload className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" />
+            Import Classrooms
+          </h2>
+          <button 
+            onClick={() => setShowImportModal(false)}
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+        <div className="p-6">
+          <div className="mb-6">
+            <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">Step 1: Download Template</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+              First, download the sample CSV file to ensure your data follows the correct format.
+            </p>
+            <button 
+              onClick={() => {
+                const headers = ['id', 'name', 'building', 'floor', 'capacity', 'type', 'features'];
+                const rows = [
+                  ['R001', 'Room 101', 'Engineering Block', '1st Floor', '60', 'Lecture Hall', 'Projector;Whiteboard'],
+                  ['R002', 'Lab 201', 'CS Building', '2nd Floor', '30', 'Computer Lab', 'Computers;Projector;Air Conditioning']
+                ];
+                const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\\n');
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.setAttribute('download', 'classroom_import_sample.csv');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+              }}
+              className="w-full flex justify-center items-center space-x-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition border border-blue-200 dark:border-blue-800"
+              type="button"
+            >
+              <Download className="w-4 h-4" />
+              <span>Download Sample CSV</span>
+            </button>
+          </div>
+          <div className="mb-2">
+            <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">Step 2: Upload Data</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+              Upload your completed CSV file here.
+            </p>
+            <label className="w-full flex flex-col items-center justify-center px-4 py-8 bg-gray-50 dark:bg-gray-700/50 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition">
+              <Upload className="w-8 h-8 text-gray-400 mb-2" />
+              <span className="text-sm text-gray-600 dark:text-gray-300">Click to browse file</span>
+              <input
+                type="file"
+                accept=".csv"
+                onChange={(e) => {
+                  handleCSVImport(e, 'classrooms');
+                  setShowImportModal(false);
+                }}
+                className="hidden"
+              />
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   const [roomForm, setRoomForm] = useState({
     id: '',
     name: '',
@@ -415,6 +485,25 @@ const ClassroomsData = () => {
     </div>
   );
 
+  const handleCSVImport = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+      const response = await uploadCSV(file, 'classrooms');
+      if (response.success || response.imported !== undefined) {
+        alert(`Successfully imported ${response.imported || 0} classrooms. ${response.errors || 0} errors.`);
+        loadClassrooms();
+      } else {
+        alert('Failed to import CSV: ' + (response.message || 'Unknown error.'));
+      }
+    } catch (error) {
+      console.error('CSV import error:', error);
+      alert('Error importing CSV file: ' + error.message);
+    }
+    event.target.value = '';
+  };
+
   const renderRoomsList = () => {
     if (loading) {
       return (
@@ -445,7 +534,8 @@ const ClassroomsData = () => {
     }
 
     return (
-      <div className="space-y-6">
+      <>
+        <div className="space-y-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700">
@@ -495,10 +585,13 @@ const ClassroomsData = () => {
       {/* Rooms Table */}
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center flex-wrap gap-4">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Classrooms & Labs</h3>
-            <div className="flex space-x-3">
-              <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600">
+            <div className="flex flex-wrap space-x-3 gap-y-2">
+              <button 
+                onClick={() => setShowImportModal(true)}
+                className="flex items-center space-x-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
+              >
                 <Upload className="w-4 h-4" />
                 <span>Import CSV</span>
               </button>
@@ -635,7 +728,9 @@ const ClassroomsData = () => {
         </div>
       </div>
     </div>
+    </>
   );
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
@@ -661,8 +756,14 @@ const ClassroomsData = () => {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Main Content with Sidebar */}
+      <div className="w-full flex pt-0">
+        {/* Left Sidebar */}
+        <AdminSidebar />
+
+        {/* Main Content Area */}
+        <main className="flex-1">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" style={{ maxHeight: 'calc(100vh - 4rem)', overflow: 'auto' }}>
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
@@ -712,14 +813,18 @@ const ClassroomsData = () => {
             <ArrowRight className="w-4 h-4 ml-2" />
           </button>
         </div>
+          </div>
+        </main>
       </div>
 
       {/* Add/Edit Form Modal */}
       {showAddForm && renderRoomForm()}
+
+      {/* Import Modal */}
+      {showImportModal && renderImportModal()}
     </div>
   );
 };
-}
 
 export default ClassroomsData;
 

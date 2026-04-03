@@ -1,13 +1,7 @@
 const express = require('express');
+const { Teacher, Classroom, Course, Student, User, Program, Division, SystemConfig, Holiday, Timetable, TimetableSession, Query } = require('../utils/mongooseToPrisma');
 const { body, validationResult } = require('express-validator');
-const mongoose = require('mongoose');
-const Timetable = require('../models/Timetable');
-const TimetableSession = require('../models/TimetableSession');
-const Teacher = require('../models/Teacher');
-const Classroom = require('../models/Classroom');
-const Course = require('../models/Course');
-const Student = require('../models/Student');
-const Program = require('../models/Program');
+
 const { generateTimetable, saveTimetable } = require('../utils/generator');
 const { authenticateToken } = require('./auth');
 const logger = require('../utils/logger');

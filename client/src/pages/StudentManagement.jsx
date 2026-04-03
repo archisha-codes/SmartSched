@@ -897,6 +897,35 @@ const StudentManagement = () => {
 
               {modalType === 'bulk' ? (
                 <div className="space-y-6">
+                  <div className="flex justify-between items-center bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
+                    <div>
+                      <h4 className="font-semibold text-blue-800 dark:text-blue-300">Format Template</h4>
+                      <p className="text-sm text-blue-600 dark:text-blue-400">Download the sample CSV file to ensure your data matches the required format.</p>
+                    </div>
+                    <button 
+                      onClick={() => {
+                        const headers = ['firstName', 'lastName', 'email', 'phone', 'gender', 'dateOfBirth', 'department', 'program', 'year', 'semester', 'division', 'batch', 'rollNumber', 'admissionDate', 'academicYear'];
+                        const rows = [
+                          ['John', 'Doe', 'john.doe@example.com', '1234567890', 'Male', '2000-01-01', 'Computer Science', 'B.Tech', '1', '1', 'A', '2024-2028', 'CS001', '2024-07-01', '2024-2025'],
+                          ['Jane', 'Smith', 'jane.smith@example.com', '0987654321', 'Female', '2001-05-15', 'Engineering', 'M.Tech', '1', '1', 'B', '2024-2026', 'EN001', '2024-07-01', '2024-2025']
+                        ];
+                        const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\\n');
+                        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(blob);
+                        link.setAttribute('download', 'student_import_sample.csv');
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                      }} 
+                      className="flex items-center px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition shrink-0" 
+                      type="button"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Sample CSV
+                    </button>
+                  </div>
+                  
                   <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6">
                     <div className="text-center">
                       <Upload className="mx-auto h-12 w-12 text-gray-400" />

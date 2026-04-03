@@ -316,6 +316,84 @@ const Auth = () => {
                         <span className="text-gray-300">Facebook</span>
                       </button>
                     </div>
+
+                    {/* Demo Login Section */}
+                    <div className="mt-4 pt-4 border-t border-gray-600">
+                      <div className="text-center mb-3">
+                        <span className="text-gray-400 text-sm">Try Demo Account</span>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2">
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            setIsLoading(true);
+                            setError('');
+                            try {
+                              const result = await login({ email: 'admin@demo.com', password: 'admin123' });
+                              if (result.success) {
+                                navigate('/admin-dashboard');
+                              } else {
+                                setError(result.message || 'Demo login failed');
+                              }
+                            } catch (err) {
+                              setError('Demo login failed. Please try again.');
+                            } finally {
+                              setIsLoading(false);
+                            }
+                          }}
+                          disabled={isLoading}
+                          className="py-2 px-3 bg-green-600/20 border border-green-600 rounded-lg text-green-400 text-xs hover:bg-green-600/30 transition-colors disabled:opacity-50"
+                        >
+                          Admin
+                        </button>
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            setIsLoading(true);
+                            setError('');
+                            try {
+                              const result = await login({ email: 'teacher@demo.com', password: 'teacher123' });
+                              if (result.success) {
+                                navigate('/teacher-dashboard');
+                              } else {
+                                setError(result.message || 'Demo login failed');
+                              }
+                            } catch (err) {
+                              setError('Demo login failed. Please try again.');
+                            } finally {
+                              setIsLoading(false);
+                            }
+                          }}
+                          disabled={isLoading}
+                          className="py-2 px-3 bg-blue-600/20 border border-blue-600 rounded-lg text-blue-400 text-xs hover:bg-blue-600/30 transition-colors disabled:opacity-50"
+                        >
+                          Teacher
+                        </button>
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            setIsLoading(true);
+                            setError('');
+                            try {
+                              const result = await login({ email: 'student@demo.com', password: 'student123' });
+                              if (result.success) {
+                                navigate('/student-dashboard');
+                              } else {
+                                setError(result.message || 'Demo login failed');
+                              }
+                            } catch (err) {
+                              setError('Demo login failed. Please try again.');
+                            } finally {
+                              setIsLoading(false);
+                            }
+                          }}
+                          disabled={isLoading}
+                          className="py-2 px-3 bg-purple-600/20 border border-purple-600 rounded-lg text-purple-400 text-xs hover:bg-purple-600/30 transition-colors disabled:opacity-50"
+                        >
+                          Student
+                        </button>
+                      </div>
+                    </div>
                   </form>
 
                   <div className="mt-4 text-center">

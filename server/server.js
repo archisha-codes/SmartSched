@@ -1,5 +1,5 @@
 const express = require('express');
-const mongoose = require('mongoose');
+const prisma = require('./config/prisma');
 const cors = require('cors');
 const helmet = require('helmet');
 // const rateLimit = require('express-rate-limit'); // Disabled for development
@@ -70,12 +70,12 @@ app.use((req, res, next) => {
 });
 
 // Database connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/timetable_generator')
-.then(() => logger.info('Connected to MongoDB'))
-.catch(err => {
-  logger.error('MongoDB connection error:', err);
-  process.exit(1);
-});
+prisma.$connect()
+  .then(() => logger.info('Connected to PostgreSQL via Prisma'))
+  .catch(err => {
+    logger.error('PostgreSQL connection error:', err);
+    process.exit(1);
+  });
 
 // Socket.io for real-time updates
 io.on('connection', (socket) => {
@@ -139,7 +139,7 @@ server.listen(PORT, () => {
 process.on('SIGTERM', () => {
   logger.info('SIGTERM received, shutting down gracefully');
   server.close(() => {
-    mongoose.connection.close();
+    prisma.$disconnect();
     process.exit(0);
   });
 });

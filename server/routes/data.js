@@ -3,15 +3,10 @@ const { body, query, validationResult } = require('express-validator');
 const csv = require('csv-parse');
 const csvStringify = require('csv-stringify');
 const multer = require('multer');
-const Teacher = require('../models/Teacher');
-const Classroom = require('../models/Classroom');
-const Course = require('../models/Course');
-const Student = require('../models/Student');
-const User = require('../models/User');
-const Program = require('../models/Program');
-const Division = require('../models/Division');
-const SystemConfig = require('../models/SystemConfig');
-const Holiday = require('../models/Holiday');
+const { 
+  Teacher, Classroom, Course, Student, User, 
+  Program, Division, SystemConfig, Holiday 
+} = require('../utils/mongooseToPrisma');
 const { authenticateToken } = require('./auth');
 const logger = require('../utils/logger');
 const emailService = require('../utils/emailService');

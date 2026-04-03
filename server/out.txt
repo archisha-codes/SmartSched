@@ -1,0 +1,104 @@
+--- Starting API Data Insertion Tests ---
+[32minfo[39m: Query: DELETE FROM "public"."Teacher" WHERE "public"."Teacher"."email" = $1 {"service":"timetable-generator","timestamp":"2026-03-29T17:28:31.945Z"}
+[32minfo[39m: Duration: 150.49339999999995ms {"service":"timetable-generator","timestamp":"2026-03-29T17:28:31.949Z"}
+[32minfo[39m: Query: DELETE FROM "public"."Classroom" WHERE "public"."Classroom"."name" = $1 {"service":"timetable-generator","timestamp":"2026-03-29T17:28:31.976Z"}
+[32minfo[39m: Duration: 25.57280000000003ms {"service":"timetable-generator","timestamp":"2026-03-29T17:28:31.976Z"}
+[32minfo[39m: Query: DELETE FROM "public"."Course" WHERE "public"."Course"."code" = $1 {"service":"timetable-generator","timestamp":"2026-03-29T17:28:31.999Z"}
+[32minfo[39m: Duration: 21.517000000000053ms {"service":"timetable-generator","timestamp":"2026-03-29T17:28:31.999Z"}
+
+[Test 1] Creating a new Teacher...
+[32minfo[39m: Query: INSERT INTO "public"."Teacher" ("id","name","email","department","designation","maxHoursPerWeek","availability","teacherType","priority","status","createdAt","updatedAt") VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING "public"."Teacher"."id", "public"."Teacher"."name", "public"."Teacher"."email", "public"."Teacher"."phone", "public"."Teacher"."department", "public"."Teacher"."designation", "public"."Teacher"."qualification", "public"."Teacher"."experience", "public"."Teacher"."subjects", "public"."Teacher"."maxHoursPerWeek", "public"."Teacher"."availability", "public"."Teacher"."teacherType", "public"."Teacher"."priority", "public"."Teacher"."status", "public"."Teacher"."preferences", "public"."Teacher"."constraints", "public"."Teacher"."sessionId", "public"."Teacher"."createdAt", "public"."Teacher"."updatedAt" {"service":"timetable-generator","timestamp":"2026-03-29T17:28:32.036Z"}
+[32minfo[39m: Duration: 25.700699999999983ms {"service":"timetable-generator","timestamp":"2026-03-29T17:28:32.037Z"}
+✅ Teacher created successfully: {
+  id: '298f9694-da23-48a7-9813-8288bb7fd339',
+  name: 'John Doe API Test',
+  email: 'john.doe.api.test@example.com',
+  phone: null,
+  department: 'Computer Science',
+  designation: 'Professor',
+  qualification: null,
+  experience: null,
+  subjects: [],
+  maxHoursPerWeek: 20,
+  availability: {},
+  teacherType: 'core',
+  priority: 'medium',
+  status: 'active',
+  preferences: null,
+  constraints: null,
+  sessionId: null,
+  createdAt: 2026-03-29T17:28:32.010Z,
+  updatedAt: 2026-03-29T17:28:32.010Z
+}
+
+[Test 2] Creating a new Classroom...
+[32minfo[39m: Query: INSERT INTO "public"."Classroom" ("id","name","building","floor","capacity","type","availability","priority","status","createdAt","updatedAt") VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING "public"."Classroom"."id", "public"."Classroom"."name", "public"."Classroom"."building", "public"."Classroom"."floor", "public"."Classroom"."capacity", "public"."Classroom"."type", "public"."Classroom"."features", "public"."Classroom"."availability", "public"."Classroom"."priority", "public"."Classroom"."status", "public"."Classroom"."suitableFor", "public"."Classroom"."constraints", "public"."Classroom"."utilizationMetrics", "public"."Classroom"."sessionId", "public"."Classroom"."createdAt", "public"."Classroom"."updatedAt" {"service":"timetable-generator","timestamp":"2026-03-29T17:28:32.065Z"}
+[32minfo[39m: Duration: 24.807300000000055ms {"service":"timetable-generator","timestamp":"2026-03-29T17:28:32.065Z"}
+✅ Classroom created successfully: {
+  id: 'e810a2b2-41b9-42cf-a695-aa55d7941b2f',
+  name: 'Test Lab 101',
+  building: 'Main',
+  floor: '1st',
+  capacity: 35,
+  type: 'Laboratory',
+  features: [],
+  availability: {},
+  priority: 'medium',
+  status: 'available',
+  suitableFor: [],
+  constraints: null,
+  utilizationMetrics: null,
+  sessionId: null,
+  createdAt: 2026-03-29T17:28:32.039Z,
+  updatedAt: 2026-03-29T17:28:32.039Z
+}
+
+[Test 3] Creating a new Course...
+
+❌ Test failed with error: PrismaClientValidationError: 
+Invalid `prisma[modelLower].create()` invocation in
+C:\Users\Roshi\OneDrive\Desktop\Time_Table_Generation_AI_Tool-main\Time_Table_Generation_AI_Tool-main\server\utils\mongooseToPrisma.js:223:51
+
+  220      return MongooseAdapter.find({}).exec(); // Approximation, doesn't matter for this codebase mostly
+  221 } else {
+  222      data.id = data.id || require('crypto').randomUUID();
+→ 223      const res = await prisma[modelLower].create({
+             data: {
+               code: "CS_TEST_101",
+               name: "Intro to API Testing",
+               department: "Computer Science",
+               program: "BTech",
+               year: 1,
+               semester: 1,
+               credits: 3,
+               sessions: {},
+               totalHoursPerWeek: 4,
+               enrolledStudents: 30,
+               isActive: true,
+               assignedTeachers: [
+                 {
+                   teacherId: {
+                     toString: [object Function]
+                               ~~~~~~~~~~~~~~~~~
+                   }
+                 }
+               ],
+               id: "a867daeb-7b16-4890-80f2-34238aa0dbff"
+             }
+           })
+
+Invalid value for argument `toString`: We could not serialize [object Function] value. Serialize the object to JSON or implement a ".toJSON()" method on it.
+    at ar (C:\Users\Roshi\OneDrive\Desktop\Time_Table_Generation_AI_Tool-main\Time_Table_Generation_AI_Tool-main\server\node_modules\@prisma\client\runtime\client.js:10:1374)
+    at e.throwValidationError (C:\Users\Roshi\OneDrive\Desktop\Time_Table_Generation_AI_Tool-main\Time_Table_Generation_AI_Tool-main\server\node_modules\@prisma\client\runtime\client.js:10:10216)
+    at Ao (C:\Users\Roshi\OneDrive\Desktop\Time_Table_Generation_AI_Tool-main\Time_Table_Generation_AI_Tool-main\server\node_modules\@prisma\client\runtime\client.js:10:8424)
+    at Co (C:\Users\Roshi\OneDrive\Desktop\Time_Table_Generation_AI_Tool-main\Time_Table_Generation_AI_Tool-main\server\node_modules\@prisma\client\runtime\client.js:10:8907)
+    at Ao (C:\Users\Roshi\OneDrive\Desktop\Time_Table_Generation_AI_Tool-main\Time_Table_Generation_AI_Tool-main\server\node_modules\@prisma\client\runtime\client.js:10:8414)
+    at Co (C:\Users\Roshi\OneDrive\Desktop\Time_Table_Generation_AI_Tool-main\Time_Table_Generation_AI_Tool-main\server\node_modules\@prisma\client\runtime\client.js:10:8907)
+    at Ao (C:\Users\Roshi\OneDrive\Desktop\Time_Table_Generation_AI_Tool-main\Time_Table_Generation_AI_Tool-main\server\node_modules\@prisma\client\runtime\client.js:10:8414)
+    at Rc (C:\Users\Roshi\OneDrive\Desktop\Time_Table_Generation_AI_Tool-main\Time_Table_Generation_AI_Tool-main\server\node_modules\@prisma\client\runtime\client.js:10:9610)
+    at Ao (C:\Users\Roshi\OneDrive\Desktop\Time_Table_Generation_AI_Tool-main\Time_Table_Generation_AI_Tool-main\server\node_modules\@prisma\client\runtime\client.js:10:7921)
+    at Co (C:\Users\Roshi\OneDrive\Desktop\Time_Table_Generation_AI_Tool-main\Time_Table_Generation_AI_Tool-main\server\node_modules\@prisma\client\runtime\client.js:10:8907) {
+  clientVersion: '7.6.0'
+}
+
+--- Tests Completed ---

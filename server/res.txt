@@ -1,0 +1,170 @@
+﻿--- Starting API Data Insertion Tests ---
+
+[Test 1] Creating a new Teacher...
+prisma:error 
+Invalid `prisma[modelLower].create()` invocation in
+C:\Users\Roshi\OneDrive\Desktop\Time_Table_Generation_AI_Tool-main\Time_Table_Generation_AI_Tool-main\server\utils\mongooseToPrisma.js:192:51
+
+  189      return MongooseAdapter.find({}).exec(); // Approximation, doesn't matter for this codebase mostly
+  190 } else {
+  191      data.id = data.id || require('crypto').randomUUID();
+ΓåÆ 192      const res = await prisma[modelLower].create(
+Unique constraint failed on the fields: (`email`)
+node : 
+At line:1 char:1
++ node test_adapter.js 2>&1 | 
+Out-File res.txt -Encoding utf8
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          :  
+   NotSpecified: (:String) []  
+  , RemoteException
+    + FullyQualifiedErrorId :  
+   NativeCommandError
+ 
+Γ¥î Test failed with error: 
+PrismaClientKnownRequestError: 
+Invalid 
+`prisma[modelLower].create()` 
+invocation in
+C:\Users\Roshi\OneDrive\Desktop
+\Time_Table_Generation_AI_Tool-
+main\Time_Table_Generation_AI_T
+ool-main\server\utils\mongooseT
+oPrisma.js:192:51
+
+  189      return MongooseAdapt
+er.find({}).exec(); // 
+Approximation, doesn't matter 
+for this codebase mostly
+  190 } else {
+  191      data.id = data.id 
+|| 
+require('crypto').randomUUID();
+ΓåÆ 192      const res = await 
+prisma[modelLower].create(
+Unique constraint failed on 
+the fields: (`email`)
+    at Gr.handleRequestError (C
+:\Users\Roshi\OneDrive\Desktop\
+Time_Table_Generation_AI_Tool-m
+ain\Time_Table_Generation_AI_To
+ol-main\server\node_modules\@pr
+isma\client\runtime\client.js:6
+5:8286)
+    at 
+Gr.handleAndLogRequestError (C:
+\Users\Roshi\OneDrive\Desktop\T
+ime_Table_Generation_AI_Tool-ma
+in\Time_Table_Generation_AI_Too
+l-main\server\node_modules\@pri
+sma\client\runtime\client.js:65
+:7581)
+    at Gr.request (C:\Users\Ros
+hi\OneDrive\Desktop\Time_Table_
+Generation_AI_Tool-main\Time_Ta
+ble_Generation_AI_Tool-main\ser
+ver\node_modules\@prisma\client
+\runtime\client.js:65:7288)
+    at process.processTicksAndR
+ejections (node:internal/proces
+s/task_queues:103:5)
+    at async a (C:\Users\Roshi\
+OneDrive\Desktop\Time_Table_Gen
+eration_AI_Tool-main\Time_Table
+_Generation_AI_Tool-main\server
+\node_modules\@prisma\client\ru
+ntime\client.js:75:6730)
+    at async 
+MongooseAdapter.create (C:\User
+s\Roshi\OneDrive\Desktop\Time_T
+able_Generation_AI_Tool-main\Ti
+me_Table_Generation_AI_Tool-mai
+n\server\utils\mongooseToPrisma
+.js:192:26)
+    at async runTests (C:\Users
+\Roshi\OneDrive\Desktop\Time_Ta
+ble_Generation_AI_Tool-main\Tim
+e_Table_Generation_AI_Tool-main
+\server\test_adapter.js:13:24) 
+{
+  code: 'P2002',
+  meta: {
+    modelName: 'Teacher',
+    driverAdapterError: 
+DriverAdapterError: 
+UniqueConstraintViolation
+        at 
+PrismaPgAdapter.onError (C:\Use
+rs\Roshi\OneDrive\Desktop\Time_
+Table_Generation_AI_Tool-main\T
+ime_Table_Generation_AI_Tool-ma
+in\server\node_modules\@prisma\
+adapter-pg\dist\index.js:678:11
+)
+        at 
+PrismaPgAdapter.performIO (C:\U
+sers\Roshi\OneDrive\Desktop\Tim
+e_Table_Generation_AI_Tool-main
+\Time_Table_Generation_AI_Tool-
+main\server\node_modules\@prism
+a\adapter-pg\dist\index.js:673:
+12)
+        at process.processTicks
+AndRejections (node:internal/pr
+ocess/task_queues:103:5)
+        at async 
+PrismaPgAdapter.queryRaw (C:\Us
+ers\Roshi\OneDrive\Desktop\Time
+_Table_Generation_AI_Tool-main\
+Time_Table_Generation_AI_Tool-m
+ain\server\node_modules\@prisma
+\adapter-pg\dist\index.js:604:3
+0)
+        at async o (C:\Users\Ro
+shi\OneDrive\Desktop\Time_Table
+_Generation_AI_Tool-main\Time_T
+able_Generation_AI_Tool-main\se
+rver\node_modules\@prisma\clien
+t\runtime\client.js:11:26386)
+        at async 
+e.interpretNode (C:\Users\Roshi
+\OneDrive\Desktop\Time_Table_Ge
+neration_AI_Tool-main\Time_Tabl
+e_Generation_AI_Tool-main\serve
+r\node_modules\@prisma\client\r
+untime\client.js:11:44601)
+        at async 
+e.interpretNode (C:\Users\Roshi
+\OneDrive\Desktop\Time_Table_Ge
+neration_AI_Tool-main\Time_Tabl
+e_Generation_AI_Tool-main\serve
+r\node_modules\@prisma\client\r
+untime\client.js:11:45045)
+        at async 
+e.interpretNode (C:\Users\Roshi
+\OneDrive\Desktop\Time_Table_Ge
+neration_AI_Tool-main\Time_Tabl
+e_Generation_AI_Tool-main\serve
+r\node_modules\@prisma\client\r
+untime\client.js:11:46265)
+        at async e.run (C:\User
+s\Roshi\OneDrive\Desktop\Time_T
+able_Generation_AI_Tool-main\Ti
+me_Table_Generation_AI_Tool-mai
+n\server\node_modules\@prisma\c
+lient\runtime\client.js:11:4331
+5)
+        at async e.execute (C:\
+Users\Roshi\OneDrive\Desktop\Ti
+me_Table_Generation_AI_Tool-mai
+n\Time_Table_Generation_AI_Tool
+-main\server\node_modules\@pris
+ma\client\runtime\client.js:57:
+815) {
+      cause: [Object]
+    }
+  },
+  clientVersion: '7.6.0'
+}
+
+--- Tests Completed ---
