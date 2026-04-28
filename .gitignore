@@ -10,3 +10,5 @@ node_modules/
 
 # Temp script
 rename_repo.js
+
+.vscode
