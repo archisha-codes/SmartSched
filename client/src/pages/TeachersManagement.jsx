@@ -127,7 +127,7 @@ const TeachersManagement = () => {
         ...Object.fromEntries(Object.entries(filters).filter(([_, v]) => v))
       });
 
-      const response = await fetch(`http://localhost:8000/api/data/teachers?${queryParams}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.VITE_API_URL || 'http://localhost:8000/api')}/data/teachers?${queryParams}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('authToken')}`
         }
@@ -342,7 +342,7 @@ const TeachersManagement = () => {
         sendCredentials: bulkData.sendCredentials
       });
 
-      const response = await fetch('http://localhost:8000/api/data/teachers/upload', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.VITE_API_URL || 'http://localhost:8000/api')}/data/teachers/upload`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('authToken')}`
@@ -390,7 +390,7 @@ const TeachersManagement = () => {
         Object.fromEntries(Object.entries(filters).filter(([_, v]) => v))
       );
 
-      const response = await fetch(`http://localhost:8000/api/data/teachers/export?${queryParams}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.VITE_API_URL || 'http://localhost:8000/api')}/data/teachers/export?${queryParams}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('authToken')}`
         }
@@ -452,7 +452,7 @@ const TeachersManagement = () => {
       
       console.log('Deleting teacher:', teacherId);
       
-      const response = await fetch(`http://localhost:8000/api/data/teachers/${teacherId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.VITE_API_URL || 'http://localhost:8000/api')}/data/teachers/${teacherId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('authToken')}`

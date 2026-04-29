@@ -148,7 +148,7 @@ const StudentManagement = () => {
         queryParams.append('sessionId', sessionId);
       }
 
-      const response = await fetch(`http://localhost:8000/api/data/students?${queryParams}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.VITE_API_URL || 'http://localhost:8000/api')}/data/students?${queryParams}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('authToken')}`
         }
@@ -213,7 +213,7 @@ const StudentManagement = () => {
 
       console.log(`${method} ${endpoint}`, dataToSend);
 
-      const response = await fetch(`http://localhost:8000${endpoint}`, {
+      const response = await fetch(`${(import.meta.env.VITE_API_URL || 'http://localhost:8000/api').replace('/api', '')}${endpoint}`, {
         method,
         headers: {
           'Content-Type': 'application/json',
@@ -256,7 +256,7 @@ const StudentManagement = () => {
         deleteData.sessionId = sessionId;
       }
       
-      const response = await fetch(`http://localhost:8000/api/data/students/${studentId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.VITE_API_URL || 'http://localhost:8000/api')}/data/students/${studentId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -349,7 +349,7 @@ const StudentManagement = () => {
         bulkDataWithSession.sessionId = sessionId;
       }
       
-      const response = await fetch('http://localhost:8000/api/data/students/bulk-create', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.VITE_API_URL || 'http://localhost:8000/api')}/data/students/bulk-create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -398,7 +398,7 @@ const StudentManagement = () => {
 
       console.log('Uploading CSV file...');
 
-      const response = await fetch('http://localhost:8000/api/data/students/upload', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.VITE_API_URL || 'http://localhost:8000/api')}/data/students/upload`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('authToken')}`
@@ -438,7 +438,7 @@ const StudentManagement = () => {
         queryParams.append('sessionId', sessionId);
       }
 
-      const response = await fetch(`http://localhost:8000/api/data/students/export?${queryParams}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.VITE_API_URL || 'http://localhost:8000/api')}/data/students/export?${queryParams}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('authToken')}`
         }

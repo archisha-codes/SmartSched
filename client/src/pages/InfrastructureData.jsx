@@ -70,7 +70,7 @@ const InfrastructureData = () => {
     if (!sessionId) return;
     try {
       const queryParams = new URLSearchParams({ sessionId });
-      const response = await fetch(`http://localhost:8000/api/data/holidays?${queryParams}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.VITE_API_URL || 'http://localhost:8000/api')}/data/holidays?${queryParams}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('authToken')}`
         }
@@ -91,7 +91,7 @@ const InfrastructureData = () => {
     if (!sessionId) return;
     try {
       const queryParams = new URLSearchParams({ sessionId });
-      const response = await fetch(`http://localhost:8000/api/data/time-slots?${queryParams}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.VITE_API_URL || 'http://localhost:8000/api')}/data/time-slots?${queryParams}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('authToken')}`
         }
@@ -118,7 +118,7 @@ const InfrastructureData = () => {
   // Holiday CRUD handlers
   const handleAddHoliday = async (holidayData) => {
     try {
-      const response = await fetch('http://localhost:8000/api/data/holidays', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.VITE_API_URL || 'http://localhost:8000/api')}/data/holidays`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -138,7 +138,7 @@ const InfrastructureData = () => {
 
   const handleUpdateHoliday = async (holidayId, holidayData) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/data/holidays/${holidayId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.VITE_API_URL || 'http://localhost:8000/api')}/data/holidays/${holidayId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -159,7 +159,7 @@ const InfrastructureData = () => {
   const handleDeleteHoliday = async (holidayId) => {
     if (!window.confirm('Are you sure you want to delete this holiday?')) return;
     try {
-      const response = await fetch(`http://localhost:8000/api/data/holidays/${holidayId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.VITE_API_URL || 'http://localhost:8000/api')}/data/holidays/${holidayId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -179,7 +179,7 @@ const InfrastructureData = () => {
   // Time slot CRUD handlers
   const handleAddTimeSlot = async (slotData) => {
     try {
-      const response = await fetch('http://localhost:8000/api/data/time-slots', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.VITE_API_URL || 'http://localhost:8000/api')}/data/time-slots`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -199,7 +199,7 @@ const InfrastructureData = () => {
 
   const handleUpdateTimeSlot = async (slotId, slotData) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/data/time-slots/${slotId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.VITE_API_URL || 'http://localhost:8000/api')}/data/time-slots/${slotId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -220,7 +220,7 @@ const InfrastructureData = () => {
   const handleDeleteTimeSlot = async (slotId) => {
     if (!window.confirm('Are you sure you want to delete this time slot?')) return;
     try {
-      const response = await fetch(`http://localhost:8000/api/data/time-slots/${slotId}`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.VITE_API_URL || 'http://localhost:8000/api')}/data/time-slots/${slotId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -240,7 +240,7 @@ const InfrastructureData = () => {
   // Policy save handler
   const handleSavePolicies = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/data/system-config', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.VITE_API_URL || 'http://localhost:8000/api')}/data/system-config`, {
         method: sessionId ? 'PUT' : 'POST',
         headers: {
           'Content-Type': 'application/json',
