@@ -2338,7 +2338,8 @@ router.post('/students/upload', upload.single('csvFile'), async (req, res) => {
             phone: record.guardianPhone || '',
             email: record.guardianEmail || ''
           },
-          status: 'Active'
+          status: 'Active',
+          sessionId: req.body.sessionId || undefined
         };
 
         // Add courses if provided
